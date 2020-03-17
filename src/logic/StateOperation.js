@@ -28,7 +28,6 @@ export const setInitialState = self => {
 };
 export const createShape = self => {
   let { board } = self.state;
-  console.log(possibilityShapes[0]);
   let presentShapePosition = [...possibilityShapes[0]];
   presentShapePosition.forEach(item => (board[item] = shape));
   self.setState({
@@ -37,12 +36,39 @@ export const createShape = self => {
   });
 };
 export const addListeners = self => {
+  const move = places => {
+    let { presentShapePosition } = self.state;
+    return presentShapePosition.map(item => item + places);
+  };
+
   document.addEventListener("keyup", e => {
-    // if(e.keyCode ===39) //right
-    // if(e.keyCode ===37) //left
+    let { presentShapePosition, board } = self.state;
+    if (e.keyCode === 39) {
+      if (
+        presentShapePosition.filter(place => place % columns === columns - 1)
+          .length === 0 &&
+        presentShapePosition.filter(place => board[place + 1] === occupied)
+          .length === 0
+      )
+        updateBoardWithShapes(self, move(1)); //right
+    }
+    if (e.keyCode === 37) {
+      if (
+        presentShapePosition.filter(place => place % columns === 0).length ===
+          0 &&
+        presentShapePosition.filter(place => board[place - 1] === occupied)
+          .length === 0
+      )
+        updateBoardWithShapes(self, move(-1)); //left
+    }
+    if (e.keyCode === 40) {
+      // down
+      if (!collisionDetection(self)) {
+        moveDown(self);
+      }
+    }
+
     // if(e.keyCode ===38) //up
-    // if(e.keyCode ===40) //right
-    // console.log(e.keyCode)
   });
 };
 export const shapeExist = self => self.state.presentShapePosition.length !== 0;

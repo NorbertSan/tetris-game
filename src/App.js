@@ -28,11 +28,12 @@ class App extends React.Component {
 
   async game() {
     const timer = setInterval(async () => {
-      await moveDown(this);
-      if (await collisionDetection(this)) {
-        // 1.leave shape
+      if (collisionDetection(this)) {
         leaveShape(this);
+      } else {
+        await moveDown(this);
       }
+
       if (await !shapeExist(this)) await createShape(this);
     }, 500);
     setTimer(this, timer);
