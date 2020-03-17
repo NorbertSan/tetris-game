@@ -1,23 +1,41 @@
 import React from "react";
 import GlobalStyles from "theme/GlobalStyles";
 import Board from "Components/Board/Board";
-import { empty, occupied, rows, columns,possibilityShapes} from "config/config";
+import {
+  empty,
+  occupied,
+  rows,
+  columns,
+  possibilityShapes
+} from "config/config";
 import styles from "./App.module.scss";
-import { setInitialState,createShape,addListeners,shapeExist,shapeController,moveDown } from "logic/StateOperation";
+import {
+  setInitialState,
+  createShape,
+  addListeners,
+  shapeExist,
+  collisionDetection,
+  moveDown,
+  setTimer,
+  leaveShape
+} from "logic/StateOperation";
 
 class App extends React.Component {
   state = {
     board: [],
-    presentShapePosition:[]
+    presentShapePosition: []
   };
 
-  async game () {
-    const timer = setInterval( async() => {
-      // await shapeController(this);
-      if(await shapeExist(this)) await createShape(this);
-      await moveDown(this)
-    }, 1000);
-    
+  async game() {
+    const timer = setInterval(async () => {
+      await moveDown(this);
+      if (await collisionDetection(this)) {
+        // 1.leave shape
+        leaveShape(this);
+      }
+      if (await !shapeExist(this)) await createShape(this);
+    }, 500);
+    setTimer(this, timer);
   }
   async componentDidMount() {
     await setInitialState(this);
