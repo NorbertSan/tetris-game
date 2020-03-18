@@ -17,23 +17,25 @@ import {
   collisionDetection,
   moveDown,
   setTimer,
-  leaveShape
+  leaveShape,
+  scoreController
 } from "logic/StateOperation";
 
 class App extends React.Component {
   state = {
     board: [],
-    presentShapePosition: []
+    presentShapePosition: [],
+    score: 0
   };
 
   async game() {
     const timer = setInterval(async () => {
       if (collisionDetection(this)) {
         leaveShape(this);
+        scoreController(this);
       } else {
         await moveDown(this);
       }
-
       if (await !shapeExist(this)) await createShape(this);
     }, 500);
     setTimer(this, timer);
@@ -50,6 +52,7 @@ class App extends React.Component {
         <div className={styles.wrapper}>
           <Board board={this.state.board} />
         </div>
+        <h2>Score : {this.state.score}</h2>
       </>
     );
   }

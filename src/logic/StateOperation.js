@@ -66,24 +66,26 @@ export const addListeners = self => {
 
   document.addEventListener("keyup", e => {
     let { presentShapePosition, board } = self.state;
+    const moveRightController = () =>
+      presentShapePosition.filter(place => place % columns === columns - 1)
+        .length === 0 &&
+      presentShapePosition.filter(place => board[place + 1] === occupied)
+        .length === 0;
+
+    const moveLeftController = () =>
+      presentShapePosition.filter(place => place % columns === 0).length ===
+        0 &&
+      presentShapePosition.filter(place => board[place - 1] === occupied)
+        .length === 0;
+
     if (e.keyCode === keysCode.right) {
-      if (
-        presentShapePosition.filter(place => place % columns === columns - 1)
-          .length === 0 &&
-        presentShapePosition.filter(place => board[place + 1] === occupied)
-          .length === 0
-      ) {
+      if (moveRightController()) {
         updateMatrix(self, 1);
         updateBoardWithShapes(self, move(1));
       }
     }
     if (e.keyCode === keysCode.left) {
-      if (
-        presentShapePosition.filter(place => place % columns === 0).length ===
-          0 &&
-        presentShapePosition.filter(place => board[place - 1] === occupied)
-          .length === 0
-      ) {
+      if (moveLeftController()) {
         updateMatrix(self, -1);
         updateBoardWithShapes(self, move(-1));
       }
@@ -111,11 +113,10 @@ export const addListeners = self => {
           [arr[0][2], arr[1][2], arr[2][2]]
         ]);
       const createZeroOneMatrix = () =>
-        matrix.reduce((prev, cur, index) => {
+        matrix.reduce((prev, cur) => {
           if (presentShapePosition.includes(cur)) return [...prev, 1];
           return [...prev, 0];
         }, []);
-
       const trasformArrToArrWithRows = zeroOneMatrix => [
         zeroOneMatrix.splice(0, 3),
         zeroOneMatrix.splice(0, 3),
@@ -136,9 +137,9 @@ export const addListeners = self => {
           }
         });
       };
-
       const setNewShape = () => self.setState({ presentShapePosition });
 
+      // FUNCTIONS INVOKED
       let { presentShapePosition, matrix } = self.state;
       const zeroOneMatrix = createZeroOneMatrix();
       let zeroOneRowsMatrix = trasformArrToArrWithRows(zeroOneMatrix);
@@ -146,9 +147,9 @@ export const addListeners = self => {
       zeroOneRowsMatrix = transpose(zeroOneRowsMatrix);
       const destructuredArr = destructureRows(zeroOneRowsMatrix);
       clearShapes();
-      console.log(presentShapePosition);
       drawNewShape(destructuredArr);
-      console.log(presentShapePosition);
+      // check if new shape is on board
+
       setNewShape();
     }
   });
@@ -195,4 +196,42 @@ export const leaveShape = self => {
   presentShapePosition.forEach(place => (board[place] = occupied));
   presentShapePosition = [];
   self.setState({ presentShapePosition, board });
+};
+
+export const scoreController = self => {
+  const addScore = () => {
+    let { score } = self.state;
+    score++;
+    return score;
+  };
+  const destroyLine = row => {
+    // all rows above destroy row have to drop down by 1 row, and first row have to be empty
+    let { board } = self.state;
+    // drop rows by 1 row
+    let modificatedBoard = [];
+
+    for (let i = 0; i < columns; i++) modificatedBoard[i] = empty;
+
+    for (let i = row * columns; i < rows * columns; i++)
+      modificatedBoard[i] = board[i];
+    for (let i = 0; i < row * columns; i++)
+      modificatedBoard[i + columns] = board[i];
+
+    return modificatedBoard;
+  };
+  const updateState = (score, board) => self.setState({ score, board });
+
+  let { board } = self.state;
+  for (let i = 0; i < rows; i++) {
+    let score = true;
+    for (let j = 0; j < columns; j++) {
+      if (board[i * columns + j] !== occupied) score = false;
+    }
+    if (score) {
+      // i - line to destroy
+      const newScore = addScore();
+      const newBoard = destroyLine(i);
+      updateState(newScore, newBoard);
+    }
+  }
 };
