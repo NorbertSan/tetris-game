@@ -1,0 +1,29 @@
+.wrapperInfo {
+  font-size: 30px;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  margin-left: 150px;
+  // color: #fafafa;
+  text-shadow: 1px 1px 1px white;
+  .info {
+    margin-top: 15px;
+  }
+}
+.pauseBtn {
+  margin-top: 120px;
+  justify-self: center;
+  font-size: 20px;
+  background: black;
+  height: 50px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  border-bottom: 2px solid black;
+  border-radius: 50px;
+  transition: 300ms;
+  &:hover {
+    transform: scale(1.05);
+  }
+}

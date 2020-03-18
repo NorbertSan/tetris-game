@@ -2,16 +2,32 @@
   display: grid;
   grid-gap: 1px;
   font-size: 0;
-  position: relative;
-  margin: 5px;
-  padding: 5px;
-  border: 5px solid rgb(146, 106, 146);
-  border-radius: 20px;
-  // background: #ddd;
+  border: 2px solid rgb(146, 106, 146);
+  border-radius: 10px;
+  overflow: hidden;
+  &.paused {
+    position: relative;
+    &::after {
+      z-index: 999;
+      content: "Paused";
+      color: #fafafa;
+      font-size: 24px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      opacity: 0.9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 }
 
 .empty {
-  background: #fff;
+  background: #fafafa;
 }
 .occupied,
 .shape {

@@ -1,15 +1,8 @@
 import React from "react";
-import GlobalStyles from "theme/GlobalStyles";
 import Board from "Components/Board/Board";
 import GameOverAlert from "Components/GameOverAlert/GameOverAlert";
 import Panel from "Components/Panel/Panel";
-import {
-  empty,
-  occupied,
-  rows,
-  columns,
-  possibilityShapes
-} from "config/config";
+import { levelTimer } from "config/config";
 import styles from "./App.module.scss";
 import {
   setInitialState,
@@ -23,7 +16,9 @@ import {
   scoreController,
   gameOverController,
   endGame,
-  setListenersToState
+  setListenersToState,
+  addFigure,
+  tooglePause
 } from "logic/StateOperation";
 
 class App extends React.Component {
@@ -31,12 +26,17 @@ class App extends React.Component {
     board: [],
     presentShapePosition: [],
     score: 0,
+    level: 0,
+    lines: 0,
     matrix: [],
+    figures: 0,
+    isPaused: false,
     isGameOver: false
   };
 
   async game() {
     const timer = setInterval(async () => {
+      if (this.state.isPaused) return;
       if (collisionDetection(this)) {
         if (gameOverController(this)) {
           endGame(this);
@@ -46,8 +46,11 @@ class App extends React.Component {
       } else {
         moveDown(this);
       }
-      if (await !shapeExist(this)) await createShape(this);
-    }, 500);
+      if (await !shapeExist(this)) {
+        await createShape(this);
+        addFigure(this);
+      }
+    }, levelTimer.level1);
     setTimer(this, timer);
   }
   async start() {
@@ -59,14 +62,24 @@ class App extends React.Component {
     this.start();
     this.game();
   }
+
   render() {
     return (
       <>
-        <GlobalStyles />
         <div className={styles.wrapper}>
-          <Board board={this.state.board} matrix={this.state.matrix} />
+          <Board
+            board={this.state.board}
+            matrix={this.state.matrix}
+            isPaused={this.state.isPaused}
+          />
+          <Panel
+            tooglePause={() => tooglePause(this)}
+            score={this.state.score}
+            level={this.state.level}
+            lines={this.state.lines}
+            figures={this.state.figures}
+          ></Panel>
         </div>
-        <h2>Score : {this.state.score}</h2>
       </>
     );
   }

@@ -21,13 +21,15 @@ class Board extends React.Component {
     );
   };
   render() {
-    const { board } = this.props;
-
+    const { board, isPaused } = this.props;
+    const boardClassList = cx(styles.board, {
+      [styles.paused]: isPaused
+    });
     return (
       <div
-        className={styles.board}
+        className={boardClassList}
         style={{
-          width: columns * squareSize + 4 * columns,
+          width: columns * squareSize + columns,
           gridTemplateColumns: `repeat(${columns},1fr)`
         }}
       >

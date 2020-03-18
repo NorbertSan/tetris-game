@@ -6,7 +6,8 @@ import {
   columns,
   possibilityShapes,
   shape,
-  keysCode
+  keysCode,
+  threshold
 } from "config/config";
 
 const updateBoardWithShapes = (self, shapes) => {
@@ -157,6 +158,7 @@ export const addListeners = self => {
     }
   };
   document.body.addEventListener("keyup", keysMoves);
+
   return keysMoves;
 };
 export const shapeExist = self => self.state.presentShapePosition.length !== 0;
@@ -209,6 +211,12 @@ export const scoreController = self => {
     score++;
     return score;
   };
+  const addLine = () => {
+    let { line } = self.state;
+    line++;
+    return line;
+  };
+  const addLevel = newScore => Math.floor(newScore / threshold);
   const destroyLine = row => {
     // all rows above destroy row have to drop down by 1 row, and first row have to be empty
     let { board } = self.state;
@@ -227,7 +235,8 @@ export const scoreController = self => {
 
     return modificatedBoard;
   };
-  const updateState = (score, board) => self.setState({ score, board });
+  const updateState = (score, board, lines, level) =>
+    self.setState({ score, board, lines, level });
 
   let { board } = self.state;
   for (let i = 0; i < rows; i++) {
@@ -239,7 +248,9 @@ export const scoreController = self => {
       // i - line to destroy
       const newScore = addScore();
       const newBoard = destroyLine(i);
-      updateState(newScore, newBoard);
+      const newLines = addLine();
+      const newLevel = addLevel(newScore);
+      updateState(newScore, newBoard, newLines, newLevel);
     }
   }
 };
@@ -254,12 +265,16 @@ export const gameOverController = self => {
     return true;
   else return false;
 };
-
+const disableKeyListeners = self => {
+  let { keyListeners } = self.state;
+  document.body.removeEventListener("keyup", keyListeners);
+};
 export const endGame = self => {
-  let { timer, keyListeners } = self.state;
+  let { timer } = self.state;
   // disable key listeners
 
-  document.body.removeEventListener("keyup", keyListeners);
+  disableKeyListeners(self);
+
   clearInterval(timer);
   self.setState({
     isGameOver: true
@@ -270,4 +285,17 @@ export const setListenersToState = (self, func) => {
   self.setState({
     keyListeners: func
   });
+};
+
+export const addFigure = self => {
+  let { figures } = self.state;
+  figures++;
+  self.setState({
+    figures
+  });
+};
+
+export const tooglePause = self => {
+  self.setState(prevState => ({ isPaused: !prevState.isPaused }));
+  console.log(self.state.isPaused);
 };

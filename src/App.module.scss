@@ -1,3 +1,34 @@
+@import url("https://fonts.googleapis.com/css?family=Sigmar+One&display=swap");
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Sigmar One", cursive;
+}
+html {
+  font-size: 62.5%;
+}
+body {
+  overflow: hidden;
+  margin: 0;
+  font-size: 1.6rem;
+  min-height: 100vh;
+  background-size: 100%;
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url("./assets/background.jpg");
+    opacity: 0.3;
+    z-index: -1;
+  }
+  /* background:#fafafa; */
+}
+
 .wrapper {
   width: 50%;
   left: 50%;
