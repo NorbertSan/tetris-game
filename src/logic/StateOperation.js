@@ -24,13 +24,12 @@ export const setInitialState = self => {
   let board = [];
   for (let i = 0; i < rows * columns; i++) board[i] = empty;
   self.setState({
-    board
+    board,
+    isGameOver: false
   });
 };
 export const createShape = self => {
   let { board } = self.state;
-  //   let presentShapePosition = [...possibilityShapes[0].normal];
-  //   presentShapePosition.forEach(item => (board[item] = shape));
 
   const matrixIndexes = possibilityShapes[0].reduce((prev, cur, index) => {
     if (cur === occupied) return [...prev, index];
@@ -64,7 +63,7 @@ export const addListeners = self => {
     return presentShapePosition.map(item => item + places);
   };
 
-  document.addEventListener("keyup", e => {
+  const keysMoves = e => {
     let { presentShapePosition, board } = self.state;
     const moveRightController = () =>
       presentShapePosition.filter(place => place % columns === columns - 1)
@@ -112,11 +111,14 @@ export const addListeners = self => {
           [arr[0][1], arr[1][1], arr[2][1]],
           [arr[0][2], arr[1][2], arr[2][2]]
         ]);
-      const createZeroOneMatrix = () =>
-        matrix.reduce((prev, cur) => {
+      const createZeroOneMatrix = () => {
+        console.log(matrix, presentShapePosition);
+        return matrix.reduce((prev, cur) => {
           if (presentShapePosition.includes(cur)) return [...prev, 1];
           return [...prev, 0];
         }, []);
+      };
+
       const trasformArrToArrWithRows = zeroOneMatrix => [
         zeroOneMatrix.splice(0, 3),
         zeroOneMatrix.splice(0, 3),
@@ -142,6 +144,7 @@ export const addListeners = self => {
       // FUNCTIONS INVOKED
       let { presentShapePosition, matrix } = self.state;
       const zeroOneMatrix = createZeroOneMatrix();
+      console.log(zeroOneMatrix);
       let zeroOneRowsMatrix = trasformArrToArrWithRows(zeroOneMatrix);
       rotate(zeroOneRowsMatrix);
       zeroOneRowsMatrix = transpose(zeroOneRowsMatrix);
@@ -152,7 +155,9 @@ export const addListeners = self => {
 
       setNewShape();
     }
-  });
+  };
+  document.body.addEventListener("keyup", keysMoves);
+  return keysMoves;
 };
 export const shapeExist = self => self.state.presentShapePosition.length !== 0;
 
@@ -167,7 +172,7 @@ const updateMatrix = (self, position) => {
 export const moveDown = self => {
   let { presentShapePosition } = self.state;
   presentShapePosition.forEach((item, index, arr) => (arr[index] += columns));
-  updateMatrix(self, 8);
+  updateMatrix(self, columns);
   updateBoardWithShapes(self, presentShapePosition);
 };
 
@@ -210,10 +215,13 @@ export const scoreController = self => {
     // drop rows by 1 row
     let modificatedBoard = [];
 
+    // set first lane to empty
     for (let i = 0; i < columns; i++) modificatedBoard[i] = empty;
 
+    // copy destroy lane and all rows under
     for (let i = row * columns; i < rows * columns; i++)
       modificatedBoard[i] = board[i];
+    // takes all rows above and dropdown by one row
     for (let i = 0; i < row * columns; i++)
       modificatedBoard[i + columns] = board[i];
 
@@ -234,4 +242,32 @@ export const scoreController = self => {
       updateState(newScore, newBoard);
     }
   }
+};
+
+export const gameOverController = self => {
+  const { presentShapePosition } = self.state;
+  if (
+    presentShapePosition.findIndex(
+      position => position > 0 && position < columns
+    ) !== -1
+  )
+    return true;
+  else return false;
+};
+
+export const endGame = self => {
+  let { timer, keyListeners } = self.state;
+  // disable key listeners
+
+  document.body.removeEventListener("keyup", keyListeners);
+  clearInterval(timer);
+  self.setState({
+    isGameOver: true
+  });
+};
+
+export const setListenersToState = (self, func) => {
+  self.setState({
+    keyListeners: func
+  });
 };

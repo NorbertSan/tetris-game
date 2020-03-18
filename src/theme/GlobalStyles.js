@@ -4,6 +4,9 @@ const GlobalStyles = createGlobalStyle`
     @import url('https://fonts.googleapis.com/css?family=Sigmar+One&display=swap');
     *,*::after,*::before{
         box-sizing:border-box;
+        margin:0;
+        padding:0;
+        
     }
     html{
         font-size:62.5%;

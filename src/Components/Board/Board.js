@@ -9,7 +9,8 @@ class Board extends React.Component {
     const classList = cx(styles.square, {
       [styles.empty]: type === empty,
       [styles.occupied]: type === occupied,
-      [styles.shape]: type === shape
+      [styles.shape]: type === shape,
+      [styles.matrix]: this.props.matrix.includes(key)
     });
     return (
       <div
@@ -26,7 +27,7 @@ class Board extends React.Component {
       <div
         className={styles.board}
         style={{
-          width: columns * squareSize,
+          width: columns * squareSize + 4 * columns,
           gridTemplateColumns: `repeat(${columns},1fr)`
         }}
       >

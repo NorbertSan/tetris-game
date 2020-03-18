@@ -1,8 +1,8 @@
 export const empty = 0;
 export const occupied = 1;
 export const shape = 2;
-export const rows = 12;
-export const columns = 8;
+export const rows = 14;
+export const columns = 10;
 export const squareSize = 35;
 export const keysCode = {
   left: 37,

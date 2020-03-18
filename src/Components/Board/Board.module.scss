@@ -2,16 +2,47 @@
   display: grid;
   grid-gap: 1px;
   font-size: 0;
-  margin: 0;
-  padding: 0;
+  position: relative;
+  margin: 5px;
+  padding: 5px;
+  border: 5px solid rgb(146, 106, 146);
+  border-radius: 20px;
+  // background: #ddd;
 }
 
 .empty {
-  background: grey;
+  background: #fff;
 }
-.occupied {
-  background: black;
+.occupied,
+.shape {
+  background: purple;
+  transition: all 0.1s ease-in-out;
+  position: relative;
+  border: 1px solid black;
+  border-radius: 2px;
+  &::after,
+  &::before {
+    content: "";
+    position: absolute;
+    width: 30%;
+    background: #fff;
+    height: 2px;
+    opacity: 0.5;
+    border-radius: 50px;
+    top: 3px;
+    left: 3px;
+  }
+  &::before {
+    transform: rotate(90deg);
+    top: 20%;
+    left: -10%;
+  }
 }
 .shape {
-  background: yellow;
+  z-index: 9;
+  background: rgb(223, 223, 94);
+  transition: none;
+}
+.matrix {
+  // background: red !important;
 }
