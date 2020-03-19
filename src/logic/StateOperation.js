@@ -7,7 +7,8 @@ import {
   possibilityShapes,
   shape,
   keysCode,
-  threshold
+  threshold,
+  levelsOfDifficulty
 } from "config/config";
 
 const updateBoardWithShapes = (self, shapes) => {
@@ -196,7 +197,7 @@ export const collisionDetection = self => {
   if (endBoardDetection() || occupiedDetection()) return true;
 };
 
-export const setTimer = (self, timer) => self.setState({ timer });
+export const setTimerIntoState = (self, timer) => self.setState({ timer });
 
 export const leaveShape = self => {
   let { presentShapePosition, board } = self.state;
@@ -212,11 +213,17 @@ export const scoreController = self => {
     return score;
   };
   const addLine = () => {
-    let { line } = self.state;
-    line++;
-    return line;
+    let { lines } = self.state;
+    lines++;
+    return lines;
   };
-  const addLevel = newScore => Math.floor(newScore / threshold);
+  const addLevel = newScore => {
+    let newLevel = Math.floor(newScore / threshold) + 1;
+    if (newLevel >= Object.keys(levelsOfDifficulty).length) {
+      newLevel = Object.keys(levelsOfDifficulty).length;
+    }
+    return newLevel;
+  };
   const destroyLine = row => {
     // all rows above destroy row have to drop down by 1 row, and first row have to be empty
     let { board } = self.state;
@@ -298,4 +305,10 @@ export const addFigure = self => {
 export const tooglePause = self => {
   self.setState(prevState => ({ isPaused: !prevState.isPaused }));
   console.log(self.state.isPaused);
+};
+
+export const speedController = self => {
+  let { level } = self.state;
+
+  return levelsOfDifficulty[`level${level}`];
 };

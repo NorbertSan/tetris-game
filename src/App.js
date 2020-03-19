@@ -2,7 +2,6 @@ import React from "react";
 import Board from "Components/Board/Board";
 import GameOverAlert from "Components/GameOverAlert/GameOverAlert";
 import Panel from "Components/Panel/Panel";
-import { levelTimer } from "config/config";
 import styles from "./App.module.scss";
 import {
   setInitialState,
@@ -11,14 +10,15 @@ import {
   shapeExist,
   collisionDetection,
   moveDown,
-  setTimer,
+  setTimerIntoState,
   leaveShape,
   scoreController,
   gameOverController,
   endGame,
   setListenersToState,
   addFigure,
-  tooglePause
+  tooglePause,
+  speedController
 } from "logic/StateOperation";
 
 class App extends React.Component {
@@ -26,7 +26,7 @@ class App extends React.Component {
     board: [],
     presentShapePosition: [],
     score: 0,
-    level: 0,
+    level: 1,
     lines: 0,
     matrix: [],
     figures: 0,
@@ -35,7 +35,8 @@ class App extends React.Component {
   };
 
   async game() {
-    const timer = setInterval(async () => {
+    // let speed;
+    const gameLoop = async () => {
       if (this.state.isPaused) return;
       if (collisionDetection(this)) {
         if (gameOverController(this)) {
@@ -50,8 +51,12 @@ class App extends React.Component {
         await createShape(this);
         addFigure(this);
       }
-    }, levelTimer.level1);
-    setTimer(this, timer);
+      clearInterval(timer);
+      timer = setInterval(gameLoop, speedController(this));
+    };
+
+    let timer = setInterval(gameLoop, 1000);
+    setTimerIntoState(this, timer);
   }
   async start() {
     await setInitialState(this);
