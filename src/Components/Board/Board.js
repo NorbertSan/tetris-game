@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./Board.module.scss";
 import cx from "classnames";
 import { empty, occupied, shape } from "config/config";
-import { columns, squareSize } from "../../config/config";
+import { columns, squareSize, rows } from "../../config/config";
 
 class Board extends React.Component {
   createSquareHTML = (type, key) => {
@@ -21,18 +21,26 @@ class Board extends React.Component {
     );
   };
   render() {
-    const { board, isPaused } = this.props;
+    const { board, isPaused, isGameOver, score } = this.props;
     const boardClassList = cx(styles.board, {
       [styles.paused]: isPaused
+      // [styles.gameOver]: isGameOver
     });
+    const boardStyles = {
+      width: columns * squareSize + columns,
+      height: rows * squareSize + rows,
+      paddingRight: columns * squareSize + columns,
+      paddingBottom: rows * squareSize + rows,
+      gridTemplateColumns: `repeat(${columns},1fr)`
+    };
     return (
-      <div
-        className={boardClassList}
-        style={{
-          width: columns * squareSize + columns,
-          gridTemplateColumns: `repeat(${columns},1fr)`
-        }}
-      >
+      <div className={boardClassList} style={boardStyles}>
+        {isGameOver && (
+          <div className={styles.gameOverInfo}>
+            <h3>Game over</h3>
+            <span>Your score : {score}</span>
+          </div>
+        )}
         {board.map((square, index) => this.createSquareHTML(square, index))}
       </div>
     );

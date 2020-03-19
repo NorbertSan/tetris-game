@@ -27,16 +27,26 @@ export const setInitialState = self => {
   for (let i = 0; i < rows * columns; i++) board[i] = empty;
   self.setState({
     board,
-    isGameOver: false
+    isGameOver: false,
+    presentShapePosition: [],
+    score: 0,
+    level: 1,
+    lines: 0,
+    matrix: [],
+    figures: 0,
+    isPaused: false
   });
 };
 export const createShape = self => {
   let { board } = self.state;
-
-  const matrixIndexes = possibilityShapes[0].reduce((prev, cur, index) => {
-    if (cur === occupied) return [...prev, index];
-    return [...prev];
-  }, []);
+  let randomShape = Math.floor(Math.random() * possibilityShapes.length);
+  const matrixIndexes = possibilityShapes[randomShape].reduce(
+    (prev, cur, index) => {
+      if (cur === occupied) return [...prev, index];
+      return [...prev];
+    },
+    []
+  );
 
   const matrix = [
     Math.floor(columns / 2 - 1) - columns,
@@ -59,7 +69,7 @@ export const createShape = self => {
     matrix
   });
 };
-export const addListeners = self => {
+export const getListeners = self => {
   const move = places => {
     let { presentShapePosition } = self.state;
     return presentShapePosition.map(item => item + places);
@@ -114,7 +124,6 @@ export const addListeners = self => {
           [arr[0][2], arr[1][2], arr[2][2]]
         ]);
       const createZeroOneMatrix = () => {
-        console.log(matrix, presentShapePosition);
         return matrix.reduce((prev, cur) => {
           if (presentShapePosition.includes(cur)) return [...prev, 1];
           return [...prev, 0];
@@ -146,7 +155,6 @@ export const addListeners = self => {
       // FUNCTIONS INVOKED
       let { presentShapePosition, matrix } = self.state;
       const zeroOneMatrix = createZeroOneMatrix();
-      console.log(zeroOneMatrix);
       let zeroOneRowsMatrix = trasformArrToArrWithRows(zeroOneMatrix);
       rotate(zeroOneRowsMatrix);
       zeroOneRowsMatrix = transpose(zeroOneRowsMatrix);
@@ -158,10 +166,15 @@ export const addListeners = self => {
       setNewShape();
     }
   };
-  document.body.addEventListener("keyup", keysMoves);
+  // document.body.addEventListener("keyup", keysMoves);
 
   return keysMoves;
 };
+export const setKeysMoves = self => {
+  let { keyListeners } = self.state;
+  document.body.addEventListener("keyup", keyListeners);
+};
+
 export const shapeExist = self => self.state.presentShapePosition.length !== 0;
 
 const updateMatrix = (self, position) => {
@@ -208,8 +221,9 @@ export const leaveShape = self => {
 
 export const scoreController = self => {
   const addScore = () => {
-    let { score } = self.state;
-    score++;
+    // add score based on present level
+    let { score, level } = self.state;
+    score += level;
     return score;
   };
   const addLine = () => {
@@ -272,20 +286,9 @@ export const gameOverController = self => {
     return true;
   else return false;
 };
-const disableKeyListeners = self => {
+export const disableKeyListeners = self => {
   let { keyListeners } = self.state;
   document.body.removeEventListener("keyup", keyListeners);
-};
-export const endGame = self => {
-  let { timer } = self.state;
-  // disable key listeners
-
-  disableKeyListeners(self);
-
-  clearInterval(timer);
-  self.setState({
-    isGameOver: true
-  });
 };
 
 export const setListenersToState = (self, func) => {
@@ -304,11 +307,20 @@ export const addFigure = self => {
 
 export const tooglePause = self => {
   self.setState(prevState => ({ isPaused: !prevState.isPaused }));
-  console.log(self.state.isPaused);
 };
 
 export const speedController = self => {
   let { level } = self.state;
 
   return levelsOfDifficulty[`level${level}`];
+};
+
+export const gamePausedController = self => self.state.isPaused;
+
+export const setGameOverState = self =>
+  self.setState({
+    isGameOver: true
+  });
+export const restartGame = self => {
+  setInitialState(self);
 };

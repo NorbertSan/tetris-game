@@ -6,7 +6,7 @@ import styles from "./App.module.scss";
 import {
   setInitialState,
   createShape,
-  addListeners,
+  getListeners,
   shapeExist,
   collisionDetection,
   moveDown,
@@ -14,11 +14,15 @@ import {
   leaveShape,
   scoreController,
   gameOverController,
-  endGame,
   setListenersToState,
   addFigure,
   tooglePause,
-  speedController
+  speedController,
+  gamePausedController,
+  disableKeyListeners,
+  setKeysMoves,
+  setGameOverState,
+  restartGame
 } from "logic/StateOperation";
 
 class App extends React.Component {
@@ -35,22 +39,30 @@ class App extends React.Component {
   };
 
   async game() {
-    // let speed;
     const gameLoop = async () => {
-      if (this.state.isPaused) return;
+      setKeysMoves(this);
+      if (gamePausedController(this)) {
+        disableKeyListeners(this);
+        return;
+      }
+
       if (collisionDetection(this)) {
         if (gameOverController(this)) {
-          endGame(this);
+          disableKeyListeners(this);
+          setGameOverState(this);
+          return;
         }
         leaveShape(this);
         scoreController(this);
       } else {
         moveDown(this);
       }
+
       if (await !shapeExist(this)) {
         await createShape(this);
         addFigure(this);
       }
+
       clearInterval(timer);
       timer = setInterval(gameLoop, speedController(this));
     };
@@ -60,8 +72,9 @@ class App extends React.Component {
   }
   async start() {
     await setInitialState(this);
-    const keyMovesFunc = addListeners(this);
-    setListenersToState(this, keyMovesFunc);
+    const keyMovesFunc = getListeners(this);
+    await setListenersToState(this, keyMovesFunc);
+    setKeysMoves(this);
   }
   componentDidMount() {
     this.start();
@@ -73,12 +86,15 @@ class App extends React.Component {
       <>
         <div className={styles.wrapper}>
           <Board
+            isGameOver={this.state.isGameOver}
             board={this.state.board}
             matrix={this.state.matrix}
             isPaused={this.state.isPaused}
+            score={this.state.score}
           />
           <Panel
             tooglePause={() => tooglePause(this)}
+            restartGame={() => restartGame(this)}
             score={this.state.score}
             level={this.state.level}
             lines={this.state.lines}

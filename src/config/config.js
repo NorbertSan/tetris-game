@@ -1,8 +1,8 @@
 export const empty = 0;
 export const occupied = 1;
 export const shape = 2;
-export const rows = 14;
-export const columns = 3;
+export const rows = 12;
+export const columns = 8;
 export const squareSize = 45;
 export const keysCode = {
   left: 37,
@@ -19,5 +19,17 @@ export const levelsOfDifficulty = {
   level5: 200,
   level6: 100
 };
-export const possibilityShapes = [[0, 0, 0, 1, 1, 1, 0, 1, 0]];
+export const possibilityShapes = [
+  [0, 0, 0, 0, 1, 1, 0, 1, 1],
+  [0, 0, 0, 1, 1, 1, 0, 0, 1],
+  [0, 0, 0, 1, 1, 1, 0, 1, 0],
+  [0, 0, 0, 1, 1, 1, 1, 0, 0],
+  [0, 0, 0, 1, 1, 1, 0, 0, 0],
+  [0, 1, 0, 0, 1, 0, 0, 1, 0],
+  [0, 1, 0, 1, 1, 0, 1, 0, 0],
+  [0, 0, 0, 1, 0, 0, 1, 1, 1],
+  [0, 0, 0, 0, 1, 0, 0, 1, 0],
+  [0, 0, 0, 1, 1, 1, 1, 0, 0],
+  [0, 0, 0, 0, 0, 1, 0, 0, 1]
+];
 export const threshold = 5; // amount of score to level up
