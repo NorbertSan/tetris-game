@@ -1,8 +1,8 @@
 export const empty = 0;
 export const occupied = 1;
 export const shape = 2;
-export const rows = 12;
-export const columns = 8;
+export const rows = 16;
+export const columns = 10;
 export const squareSize = 45;
 export const keysCode = {
   left: 37,
@@ -22,6 +22,7 @@ export const levelsOfDifficulty = {
 export const possibilityShapes = [
   [0, 0, 0, 0, 1, 1, 0, 1, 1],
   [0, 0, 0, 1, 1, 1, 0, 0, 1],
+  [0, 0, 0, 0, 1, 1, 0, 1, 1],
   [0, 0, 0, 1, 1, 1, 0, 1, 0],
   [0, 0, 0, 1, 1, 1, 1, 0, 0],
   [0, 0, 0, 1, 1, 1, 0, 0, 0],

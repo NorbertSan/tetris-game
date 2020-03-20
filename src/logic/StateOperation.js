@@ -151,9 +151,20 @@ export const getListeners = self => {
         });
       };
       const setNewShape = () => self.setState({ presentShapePosition });
+      const outOfBoardController = () => {
+        // check if matrix is included in firts and last row, that means that next press keyup
+        const matrixSize = Math.sqrt(matrix.length);
+        const arr = matrix.reduce((prev, cur) => {
+          if (cur % columns === 0 || cur % columns === columns - 1)
+            return [...prev, cur];
+          else return [...prev];
+        }, []);
+        if (arr.length >= 2 * matrixSize) return true;
+      };
 
       // FUNCTIONS INVOKED
       let { presentShapePosition, matrix } = self.state;
+      if (outOfBoardController()) return;
       const zeroOneMatrix = createZeroOneMatrix();
       let zeroOneRowsMatrix = trasformArrToArrWithRows(zeroOneMatrix);
       rotate(zeroOneRowsMatrix);
